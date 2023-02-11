@@ -2,9 +2,10 @@ from driverES import DriverES
 
 class Impressora(DriverES):
     def __init__(self) -> None:
-        self.memoria
+        self.memoria = []
 
     def executar(self):
+        "Imprimindo "
         
     def ler(self) -> bloco:
 

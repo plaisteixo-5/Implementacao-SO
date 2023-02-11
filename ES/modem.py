@@ -1,4 +1,6 @@
-class Modem:
+from driverES import DriverES
+
+class Modem(DriverES):
     def __init__(self) -> None:
         self.memoria
 
