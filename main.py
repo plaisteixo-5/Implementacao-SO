@@ -10,6 +10,8 @@ fila_prioridade2_user = queue.PriorityQueue()
 fila_prioridade3_user = queue.PriorityQueue()
 
 
+
+
 # Obter dados da file.txt
 from auxiliares import Receber_files
 
