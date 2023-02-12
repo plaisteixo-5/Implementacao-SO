@@ -1,3 +1,9 @@
+from time import sleep
+
+N_CICLOS = 5
+TEMPO_SLEEP_CURTO = 0.2
+TEMPO_SLEEP_LONGO = 0.8
+
 class Processo:
     def __init__(self, pID, offset, processo):
         self.processo_ID = int(pID)
@@ -34,6 +40,7 @@ class Gerenciador_de_processos:
         self.rt_processos_auxID = 0
         self.user_processos_auxID = 0
         self.tempo_atual = 0
+        self.ciclos = N_CICLOS
         self.tabela_de_processos = {}
 
         for processo in processos:
@@ -68,24 +75,24 @@ class Gerenciador_de_processos:
         print(f'  modems: {processo.requisicao_do_modem}')
         print(f'  drives: {processo.requisicao_do_disco}')
         print()
+        sleep(TEMPO_SLEEP_LONGO)
 
     def run(self):
-
         processo_anterior = None
         processo_atual = None
         processos_terminados = 0
 
         while processos_terminados < len(self.todos_processos):
-
+            sleep(0.05)
             self.verificar_novo_processo()
             
-            if processo_atual == None:
-                if len(self.rt_processos_ready) > 0:
-                    processo_atual = self.rt_processos_ready[0].processo_ID
-                    self.rt_processos_ready.pop(0)
+            if processo_atual == None: # se não houver processo atual
+                if len(self.rt_processos_ready) > 0: # se houver processos RT
+                    processo_atual = self.rt_processos_ready[0].processo_ID # pega o id do primeiro processo RT
+                    self.rt_processos_ready.pop(0) # remove o processo RT da lista de processos RT prontos
 
-                    if self.tabela_de_processos[processo_atual].executando() == False:
-                        self.exibir_processos(self.tabela_de_processos[processo_atual])
+                    if self.tabela_de_processos[processo_atual].executando() == False: # se o processo não estiver executando
+                        self.exibir_processos(self.tabela_de_processos[processo_atual]) # exibe as informações do processo
 
                     print(f'process {processo_atual} =>')
                     print(f'P{processo_atual} STARTED')
@@ -93,13 +100,13 @@ class Gerenciador_de_processos:
 
                     self.tabela_de_processos[processo_atual].tempo_executado += 1
 
-                    if self.tabela_de_processos[processo_atual].terminado() == True:
-                        print(f'P{processo_atual} return SIGINT\n')
+                    if self.tabela_de_processos[processo_atual].terminado() == True: # se o processo terminou
+                        print(f'P{processo_atual} return SIGINT\n') 
                         processos_terminados += 1
-                        processo_atual = None
+                        processo_atual = None # processo atual é nulo
                     else:
-                        processo_anterior = processo_atual
-                else:
+                        processo_anterior = processo_atual # se não terminou, o processo anterior é o processo atual
+                else: # se não houver processos RT e houver processos USER
                     if len(self.user_processos_ready) > 0:
                         processo_atual = self.user_processos_ready[0].processo_ID
                         self.user_processos_ready.pop(0)
@@ -120,8 +127,8 @@ class Gerenciador_de_processos:
                         else:
                             processo_anterior = processo_atual
 
-            else:
-                if self.tabela_de_processos[processo_atual].prioridade == 0:
+            else: # se houver processo atual
+                if self.tabela_de_processos[processo_atual].prioridade == 0: # verifica se o processo atual é RT
                     self.tabela_de_processos[processo_atual].tempo_executado += 1
                     print(f'P{processo_atual} instructions {self.tabela_de_processos[processo_atual].tempo_executado + 1}')
 
@@ -131,16 +138,16 @@ class Gerenciador_de_processos:
                         processo_atual = None
                     else:
                         processo_anterior = processo_atual
-                else:
-                    if(len(self.rt_processos_ready) > 0):
+                else: # verifica se o processo atual é USER
+                    if(len(self.rt_processos_ready) > 0): # verifica se existe um processo RT pronto
                         print(f'P{processo_atual} STOPPED\n')
 
-                        self.user_processos_ready.append(self.tabela_de_processos[processo_atual])
-                        self.user_processos_ready.sort(key=lambda x: x.prioridade)
+                        self.user_processos_ready.append(self.tabela_de_processos[processo_atual]) # devolve o processo atual para a lista de processos USER prontos
+                        self.user_processos_ready.sort(key=lambda x: x.prioridade) # ordena a lista de processos USER prontos
 
-                        processo_atual = self.rt_processos_ready[0].processo_ID
-                        self.rt_processos_ready.pop(0)
-
+                        processo_atual = self.rt_processos_ready[0].processo_ID # pega o id do primeiro processo RT
+                        self.rt_processos_ready.pop(0) # remove o processo RT da lista de processos RT prontos
+                        sleep(TEMPO_SLEEP_CURTO)
                         if self.tabela_de_processos[processo_atual].executando() == False:
                             self.exibir_processos(self.tabela_de_processos[processo_atual])
 
@@ -156,25 +163,27 @@ class Gerenciador_de_processos:
                             processo_atual = None
                         else:
                             processo_anterior = processo_atual
-                    else:
-                        if(len(self.user_processos_ready) > 0):
-                            print(f'P{processo_atual} STOPPED\n')
-
-                            self.user_processos_ready.append(self.tabela_de_processos[processo_atual])
-                            self.user_processos_ready.sort(key=lambda x: x.prioridade)
-
-                            if self.user_processos_ready[0].processo_ID == processo_anterior and len(self.user_processos_ready) > 1:
-                                processo_atual = self.user_processos_ready[1].processo_ID
-                                self.user_processos_ready.pop(1)
-                            else:
-                                processo_atual = self.user_processos_ready[0].processo_ID
+                    else: # se não houver processos RT
+                        if(len(self.user_processos_ready) > 0): # verifica se existe pelo outro processo USER pronto
+                            #Aqui pode ter uma realimentação de processos USER
+                           
+                            #verificar se o proximo tem prioridade maior que o atual
+                            if (self.user_processos_ready[0].prioridade < self.tabela_de_processos[processo_atual].prioridade and self.ciclos <= 0) or self.ciclos <= 0:
+                                print(f'P{processo_atual} STOPPED\n')
+                                self.user_processos_ready.append(self.tabela_de_processos[processo_atual]) # devolve o processo atual para a lista de processos USER prontos
+                                processo_atual = self.user_processos_ready[0].processo_ID # pega o id do primeiro processo USER
                                 self.user_processos_ready.pop(0)
-                            
+                                self.user_processos_ready.sort(key=lambda x: x.prioridade) # ordena a lista de processos USER prontos
+                                self.ciclos = N_CICLOS
+                                print(f'process {processo_atual} =>')
+                                print(f'P{processo_atual} STARTED')
+                                sleep(TEMPO_SLEEP_CURTO)
+                        
+                            self.ciclos -= 1
+                                                    
                             if self.tabela_de_processos[processo_atual].executando() == False:
                                 self.exibir_processos(self.tabela_de_processos[processo_atual])
-
-                            print(f'process {processo_atual} =>')
-                            print(f'P{processo_atual} STARTED')
+                    
                             print(f'P{processo_atual} instructions {self.tabela_de_processos[processo_atual].tempo_executado + 1}')
 
                             self.tabela_de_processos[processo_atual].tempo_executado += 1
@@ -183,8 +192,10 @@ class Gerenciador_de_processos:
                                 processos_terminados += 1
                                 print(f'P{processo_atual} return SIGINT\n')
                                 processo_atual = None
+                                self.ciclos = N_CICLOS
                             else:
                                 processo_anterior = processo_atual
+                            
                         else:
                             print(f'P{processo_atual} instructions {self.tabela_de_processos[processo_atual].tempo_executado + 1}')
                             self.tabela_de_processos[processo_atual].tempo_executado += 1
