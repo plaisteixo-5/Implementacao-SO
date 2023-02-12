@@ -5,18 +5,10 @@ class DriverES(ABC):
     #supor que ele pode ser chamado uma segunda vez antes que a
         #primeira chamada tenha sido concluída.
     def __init__(self) -> None:
-        self.memoria
+        self.tipo
 
     @abstractclassmethod
     def executar(self):
-        pass
-
-    @abstractclassmethod    
-    def ler(self):
-        pass
-
-    @abstractclassmethod
-    def escrever(self) -> None:
         pass
 
     @abstractclassmethod

@@ -2,13 +2,10 @@ from driverES import DriverES
 
 class Impressora(DriverES):
     def __init__(self) -> None:
-        self.memoria = []
+        self.tipo = "IMPRESSORA"
 
     def executar(self):
-        "Imprimindo "
-        
-    def ler(self) -> bloco:
+        "Exencutando [IMPRESSORA]..."
 
-    def escrever(self) -> None:
-
-    def interromper(self) -> None:
+    def interromper(self):
+        print(" ---------------- Interrupção causada por [IMPRESSORA] ----------------")

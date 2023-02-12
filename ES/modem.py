@@ -2,12 +2,10 @@ from driverES import DriverES
 
 class Modem(DriverES):
     def __init__(self) -> None:
-        self.memoria
+        self.tipo = "MODEM"
 
     def executar(self):
-        
-    def ler(self) -> bloco:
+        "Exencutando [MODEM]..."
 
-    def escrever(self) -> None:
-
-    def interromper(self) -> None:
+    def interromper(self):
+        print(" ---------------- Interrupção causada por [MODEM] ----------------")  

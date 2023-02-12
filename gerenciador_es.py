@@ -1,29 +1,27 @@
 from typing import Type
-from .ES import DriverES
+from ES import DriverES
+from ES import Syscalls
+from ES import Impressora
 
 class GerenciadorIO:
-
-
     def __init__(self) -> None:
-        self.IOList = {}   
+        self.IOList = {} 
+        self.qtdDispositivos = 0
        
-        
-
-        #Fila de requisições para cada dispositivo, em seguida definiri a prioriadea
-
-        
-        #Rotina d etratamento de interrupção vetor de interrução ?!
-        #pag 35 nos slides
-
     def inserirDispositivo(self, dispositivo: Type[DriverES]):
-        #Mapear drive com o nome
-        # gerarNome
-        # inserir em IO List 
+        self.IOList["#"+self.qtdDispositivos+dispositivo.tipo] = dispositivo
+        # gerenciadorMemoria.
+        
 
-    def executarDispositivo(self, dispositivo: Type[DriverES]):
-        self.IOList[dispositivo].executar()
+    def sysCall(self, id, syscall):
+        if(syscall == Syscalls.EXECUTAR):
+            self.IOList[id].executar()
+        elif(syscall == Syscalls.INTERROMPER):
+            self.IOList[id].interromper()
 
+    def removerDispositivo(self, id):
+        self.IOList.pop(id)
 
-    def gravarDadosEmRegistradores(self):
-    def lerDadosDosRegistradores(self):
-    
+GIO  = GerenciadorIO()
+GIO.inserirDispositivo(Impressora())
+print
