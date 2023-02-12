@@ -12,4 +12,5 @@ for processo in lista_processos:
     requisição_do_modem = int(processo[6])
     número_código_do_disco = int(processo[7])
 
+
     
