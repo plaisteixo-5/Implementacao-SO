@@ -1,5 +1,3 @@
-from auxiliares import Receber_processos
-
 class Processo:
     def __init__(self, pID, offset, processo):
         self.processo_ID = int(pID)
@@ -43,8 +41,13 @@ class Gerenciador_de_processos:
 
         self.todos_processos.sort(key=lambda x: x.tempo_de_inicialização)
 
-        self.rt_processos = [x for x in self.todos_processos if x.prioridade == 0]
-        self.user_processos = [x for x in self.todos_processos if x.prioridade != 0]
+        self.rt_processos = [x for x in self.todos_processos if int(x.prioridade) == 0]
+        self.user_processos = [x for x in self.todos_processos if int(x.prioridade) != 0]
+
+        print(f'Processos RT: {len(self.rt_processos)}')
+        print(f'Processos User: {len(self.user_processos)}')
+        print(f'Processos Todos: {len(self.todos_processos)}')
+
 
     def verificar_novo_processo(self):
         while self.rt_processos_auxID < len(self.rt_processos) and self.rt_processos[self.rt_processos_auxID].tempo_de_inicialização == self.tempo_atual:
@@ -58,21 +61,108 @@ class Gerenciador_de_processos:
             self.user_processos_auxID += 1
 
     def exibir_processos(self, processo):
-        print(f"##### Dispatcher #####")
-        print(f'Processo ID: {processo.processo_ID}')
-        print(f'Offset: {processo.offset}')
-        print(f'Blocos: {processo.blocos_em_memoria}')
-        print(f'Prioridade: {processo.prioridade}')
-        print(f'Tempo: {processo.tempo_de_processador - processo.tempo_executado}')
-        print(f'Impressora: {processo.requisicao_da_impressora}')
-        print(f'Scanner: {processo.requisicao_do_scanner}')
-        print(f'Modem: {processo.requisicao_do_modem}')
-        print(f'Disco: {processo.requisicao_do_disco}')
+        print(f"##### DESPACHANTE #####")
+        print(f'\tProcesso ID: {processo.processo_ID}')
+        print(f'\tOffset: {processo.offset}')
+        print(f'\tBlocos: {processo.blocos_em_memoria}')
+        print(f'\tPrioridade: {processo.prioridade}')
+        print(f'\tTempo: {processo.tempo_de_processador - processo.tempo_executado}')
+        print(f'\tImpressora: {processo.requisicao_da_impressora}')
+        print(f'\tScanner: {processo.requisicao_do_scanner}')
+        print(f'\tModem: {processo.requisicao_do_modem}')
+        print(f'\tDisco: {processo.requisicao_do_disco}')
         print()
 
     def run(self):
-        processo_anterior = None
-        processo_atual = None
+        processo_anterior = -1
+        processo_atual = -1
         processos_terminados = 0
 
-    
+        while processos_terminados < len(self.todos_processos):
+            self.verificar_novo_processo()
+
+            if processo_atual == -1:
+                if len(self.rt_processos_ready) > 0: # Se houver processos RT
+                    processo_atual = self.rt_processos_ready[0].processo_ID
+                    self.rt_processos_ready.pop(0)
+                    print(f'Processo RT {processo_atual} executando...')
+                    if self.tabela_de_processos[processo_atual].executando() == False:
+                        self.exibir_processos(self.tabela_de_processos[processo_atual])
+                        
+                    self.tabela_de_processos[processo_atual].tempo_executado += 1
+
+                    if self.tabela_de_processos[processo_atual].terminado() == True:
+                        processos_terminados += 1
+                        processo_atual = -1
+                        
+                elif len(self.user_processos_ready) > 0: # Se não houver processos RT, mas houver processos USER
+                    processo_atual = self.user_processos_ready[0].processo_ID
+                    self.user_processos_ready.pop(0)
+
+                    if self.tabela_de_processos[processo_atual].executando() == False:
+                        self.exibir_processos(self.tabela_de_processos[processo_atual])
+
+                    self.tabela_de_processos[processo_atual].tempo_executado += 1
+
+                    if self.tabela_de_processos[processo_atual].terminado() == True:
+                        processos_terminados += 1
+                        processo_atual = -1
+
+            else: # Se já houver um processo sendo executado
+                if self.tabela_de_processos[processo_atual].prioridade == 0:
+                    self.tabela_de_processos[processo_atual].tempo_executado += 1
+                    if self.tabela_de_processos[processo_atual].terminado() == True:
+                        processos_terminados += 1
+                        processo_atual = -1
+                    else:
+                        processo_anterior = processo_atual
+                else:
+                    if(len(self.rt_processos_ready) > 0):
+                        self.rt_processos_ready.append(self.tabela_de_processos[processo_atual])
+                        self.rt_processos_ready.sort(key=lambda x: x.prioridade)
+
+                        processo_atual = self.rt_processos_ready[0].processo_ID
+                        self.rt_processos_ready.pop(0)
+                        
+                        if self.tabela_de_processos[processo_atual].executando() == False:
+                            self.exibir_processos(self.tabela_de_processos[processo_atual])
+
+                        self.tabela_de_processos[processo_atual].tempo_executado += 1
+
+                        if self.tabela_de_processos[processo_atual].terminado() == True:
+                            processos_terminados += 1
+                            processo_atual = -1
+                        else:   
+                            processo_anterior = processo_atual
+                    else:
+                        if(len(self.user_processos_ready) > 0):
+                            self.user_processos_ready.append(self.tabela_de_processos[processo_atual])
+                            self.user_processos_ready.sort(key=lambda x: x.prioridade)
+
+                            if self.tabela_de_processos[0].pID == processo_anterior and len(self.user_processos_ready) > 1:                            
+                                processo_atual = self.user_processos_ready[1].processo_ID
+                                self.user_processos_ready.pop(1)
+                            else:
+                                processo_atual = self.user_processos_ready[0].processo_ID
+                                self.user_processos_ready.pop(0)
+
+
+                            if self.tabela_de_processos[processo_atual].executando() == False:
+                                self.exibir_processos(self.tabela_de_processos[processo_atual])
+
+                            self.tabela_de_processos[processo_atual].tempo_executado += 1
+
+                            if self.tabela_de_processos[processo_atual].terminado() == True:
+                                processos_terminados += 1
+                                processo_atual = -1
+                            else:
+                                processo_anterior = processo_atual
+                        else:
+                            self.tabela_de_processos[processo_atual].tempo_executado += 1
+                            if self.tabela_de_processos[processo_atual].terminado() == True:
+                                processos_terminados += 1
+                                processo_atual = -1
+                            else:
+                                processo_anterior = processo_atual
+
+            self.tempo_atual += 1
