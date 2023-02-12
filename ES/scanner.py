@@ -2,12 +2,10 @@ from driverES import DriverES
 
 class Scanner(DriverES):
     def __init__(self) -> None:
-        self.memoria
+        self.tipo = "SCANNER"
 
     def executar(self):
-        
-    def ler(self) -> bloco:
+        "Exencutando [Scanner]..."
 
-    def escrever(self) -> None:
-
-    def interromper(self) -> None:
+    def interromper(self):
+        print(" ---------------- Interrupção causada por [SCANNER] ----------------")
