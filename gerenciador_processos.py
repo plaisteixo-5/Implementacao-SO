@@ -1,7 +1,7 @@
 from time import sleep
 
 N_CICLOS = 5
-TEMPO_SLEEP_CURTO = 0.2
+TEMPO_SLEEP_CURTO = 0.4
 TEMPO_SLEEP_LONGO = 0.8
 
 class Processo:
@@ -170,6 +170,7 @@ class Gerenciador_de_processos:
                             #verificar se o proximo tem prioridade maior que o atual
                             if (self.user_processos_ready[0].prioridade < self.tabela_de_processos[processo_atual].prioridade and self.ciclos <= 0) or self.ciclos <= 0:
                                 print(f'P{processo_atual} STOPPED\n')
+                                self.tabela_de_processos[processo_atual].prioridade += 1
                                 self.user_processos_ready.append(self.tabela_de_processos[processo_atual]) # devolve o processo atual para a lista de processos USER prontos
                                 processo_atual = self.user_processos_ready[0].processo_ID # pega o id do primeiro processo USER
                                 self.user_processos_ready.pop(0)
