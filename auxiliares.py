@@ -35,7 +35,7 @@ class Kernel:
                 else:
                     gerenciador_arquivos.DeletaArquivo(id_processo=operacao[0], nome_arquivo=operacao[2])
                     
-                gerenciador_arquivos.PrintaMemoria()
+            gerenciador_arquivos.PrintaMemoria()
 
             print(operacao)
 
@@ -67,8 +67,7 @@ class Kernel:
 
         # Aqui deve vir o código para o arquivo files.txt
     
-
-    receber_files('files.txt')
+        Kernel.receber_files('files.txt')
 
 
 

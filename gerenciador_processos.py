@@ -1,5 +1,5 @@
 from time import sleep
-from listaBlocos import ListaDeBlocos
+from gerenciador_memoria import ListaDeBlocos
 from memoriaTipo import TipoMemoria
 
 N_CICLOS = 5
