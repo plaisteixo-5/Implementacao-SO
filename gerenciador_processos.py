@@ -233,3 +233,9 @@ class Gerenciador_de_processos:
                                 processo_anterior = processo_atual
 
             self.tempo_atual += 1
+        
+    def ExisteProcesso(self, id_processo):
+        if id_processo in self.tabela_de_processos:
+            return True
+        
+        return False

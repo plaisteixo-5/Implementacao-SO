@@ -34,10 +34,8 @@ class Kernel:
                     gerenciador_arquivos.SalvaArquivo(id_processo=operacao[0], nome_arquivo=operacao[2], quantidade_blocos=operacao[3])
                 else:
                     gerenciador_arquivos.DeletaArquivo(id_processo=operacao[0], nome_arquivo=operacao[2])
-                    
-                gerenciador_arquivos.PrintaMemoria()
 
-            print(operacao)
+            gerenciador_arquivos.PrintaMemoria()
 
         return qtd_blocos, n_segmentos_ocupados, lista
 

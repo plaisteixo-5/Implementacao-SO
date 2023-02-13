@@ -24,9 +24,7 @@ class GerenciadorDeArquivos:
                     while sub_index <= tamanho_memoria - 1 and self.memoria_auxiliar[sub_index] == ' ' and contador != quantidade_blocos and contador != int(quantidade_blocos):
                         contador += 1
                         sub_index += 1
-                        # if nome_arquivo == 'D' or nome_arquivo == 'B': print(f'Contador: {contador}')
-                    
-                    # if nome_arquivo == 'D' or nome_arquivo == 'B': print(f'Contador final: {contador}\nNumero blocos:{quantidade_blocos}')
+                        
                     if contador == int(quantidade_blocos):
                         self.AlocaMemoria(nome_arquivo, index, int(quantidade_blocos))
                         self.PrintaMensagemDeSucessoArquivoSalvo(id_processo, nome_arquivo, index, sub_index)
