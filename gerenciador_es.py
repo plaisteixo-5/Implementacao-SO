@@ -12,7 +12,6 @@ class GerenciadorIO:
         self.IOList["#"+self.qtdDispositivos+dispositivo.tipo] = dispositivo
         # gerenciadorMemoria.
         
-
     def sysCall(self, id, syscall):
         if(syscall == Syscalls.EXECUTAR):
             self.IOList[id].executar()

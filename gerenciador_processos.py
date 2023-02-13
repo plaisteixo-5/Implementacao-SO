@@ -1,4 +1,6 @@
 from time import sleep
+from listaBlocos import ListaDeBlocos
+from memoriaTipo import TipoMemoria
 
 N_CICLOS = 5
 TEMPO_SLEEP_CURTO = 0.4
@@ -42,6 +44,7 @@ class Gerenciador_de_processos:
         self.tempo_atual = 0
         self.ciclos = N_CICLOS
         self.tabela_de_processos = {}
+        self.memoria = ListaDeBlocos()
 
         for processo in processos:
             self.todos_processos.append(processo)
@@ -93,6 +96,8 @@ class Gerenciador_de_processos:
 
                     if self.tabela_de_processos[processo_atual].executando() == False: # se o processo não estiver executando
                         self.exibir_processos(self.tabela_de_processos[processo_atual]) # exibe as informações do processo
+                        # alocar memória
+                        self.memoria.alocarMemoria(self.tabela_de_processos[processo_atual].processo_ID, TipoMemoria.TREAL, self.tabela_de_processos[processo_atual].blocos_em_memoria)
 
                     print(f'process {processo_atual} =>')
                     print(f'P{processo_atual} STARTED')
@@ -101,6 +106,8 @@ class Gerenciador_de_processos:
                     self.tabela_de_processos[processo_atual].tempo_executado += 1
 
                     if self.tabela_de_processos[processo_atual].terminado() == True: # se o processo terminou
+                        #liberar memoria
+                        self.memoria.liberarMemoria(self.tabela_de_processos[processo_atual].processo_ID)
                         print(f'P{processo_atual} return SIGINT\n') 
                         processos_terminados += 1
                         processo_atual = None # processo atual é nulo
@@ -113,14 +120,19 @@ class Gerenciador_de_processos:
 
                         if self.tabela_de_processos[processo_atual].executando() == False:
                             self.exibir_processos(self.tabela_de_processos[processo_atual])
+                            # alocar memória
+                            self.memoria.alocarMemoria(self.tabela_de_processos[processo_atual].processo_ID, TipoMemoria.PRCS, self.tabela_de_processos[processo_atual].blocos_em_memoria)
 
                         print(f'process {processo_atual} =>')
                         print(f'P{processo_atual} STARTED')
                         print(f'P{processo_atual} instructions {self.tabela_de_processos[processo_atual].tempo_executado + 1}')
                         
+
                         self.tabela_de_processos[processo_atual].tempo_executado += 1
                         
                         if self.tabela_de_processos[processo_atual].terminado() == True:
+                            #liberar memoria
+                            self.memoria.liberarMemoria(self.tabela_de_processos[processo_atual].processo_ID)
                             print(f'P{processo_atual} return SIGINT\n')
                             processos_terminados += 1
                             processo_atual = None
@@ -133,8 +145,10 @@ class Gerenciador_de_processos:
                     print(f'P{processo_atual} instructions {self.tabela_de_processos[processo_atual].tempo_executado + 1}')
 
                     if self.tabela_de_processos[processo_atual].terminado() == True:
-                        processos_terminados += 1
+                        #liberar memoria
+                        self.memoria.liberarMemoria(self.tabela_de_processos[processo_atual].processo_ID)
                         print(f'P{processo_atual} return SIGINT\n')
+                        processos_terminados += 1
                         processo_atual = None
                     else:
                         processo_anterior = processo_atual
@@ -150,6 +164,8 @@ class Gerenciador_de_processos:
                         sleep(TEMPO_SLEEP_CURTO)
                         if self.tabela_de_processos[processo_atual].executando() == False:
                             self.exibir_processos(self.tabela_de_processos[processo_atual])
+                            # alocar memória
+                            self.memoria.alocarMemoria(self.tabela_de_processos[processo_atual].processo_ID, TipoMemoria.TREAL, self.tabela_de_processos[processo_atual].blocos_em_memoria)
 
                         print(f'process {processo_atual} =>')
                         print(f'P{processo_atual} STARTED')
@@ -158,12 +174,14 @@ class Gerenciador_de_processos:
                         self.tabela_de_processos[processo_atual].tempo_executado += 1
                         
                         if self.tabela_de_processos[processo_atual].terminado() == True:
-                            processos_terminados += 1
+                            #liberar memoria
+                            self.memoria.liberarMemoria(self.tabela_de_processos[processo_atual].processo_ID)
                             print(f'P{processo_atual} return SIGINT\n')
+                            processos_terminados += 1
                             processo_atual = None
                         else:
                             processo_anterior = processo_atual
-                    else: # se não houver processos RT
+                    else: # se não houver processos RT, logo USER
                         if(len(self.user_processos_ready) > 0): # verifica se existe pelo outro processo USER pronto
                             #Aqui pode ter uma realimentação de processos USER
                            
@@ -184,13 +202,17 @@ class Gerenciador_de_processos:
                                                     
                             if self.tabela_de_processos[processo_atual].executando() == False:
                                 self.exibir_processos(self.tabela_de_processos[processo_atual])
-                    
+                                # alocar memória
+                                self.memoria.alocarMemoria(self.tabela_de_processos[processo_atual].processo_ID, TipoMemoria.PRCS, self.tabela_de_processos[processo_atual].blocos_em_memoria)
+
                             print(f'P{processo_atual} instructions {self.tabela_de_processos[processo_atual].tempo_executado + 1}')
 
                             self.tabela_de_processos[processo_atual].tempo_executado += 1
 
                             if self.tabela_de_processos[processo_atual].terminado() == True:
                                 processos_terminados += 1
+                                #liberar memoria
+                                self.memoria.liberarMemoria(self.tabela_de_processos[processo_atual].processo_ID)
                                 print(f'P{processo_atual} return SIGINT\n')
                                 processo_atual = None
                                 self.ciclos = N_CICLOS
@@ -202,8 +224,10 @@ class Gerenciador_de_processos:
                             self.tabela_de_processos[processo_atual].tempo_executado += 1
                             
                             if self.tabela_de_processos[processo_atual].terminado() == True:
-                                processos_terminados += 1
+                                #liberar memoria
+                                self.memoria.liberarMemoria(self.tabela_de_processos[processo_atual].processo_ID)
                                 print(f'P{processo_atual} return SIGINT\n')
+                                processos_terminados += 1
                                 processo_atual = None
                             else:
                                 processo_anterior = processo_atual
