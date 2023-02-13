@@ -7,6 +7,11 @@ class GerenciadorIO:
     def __init__(self) -> None:
         self.IOList = {} 
         self.qtdDispositivos = 0
+        self.dispositivos = {
+                            'scanner':[1,[]],
+                            'impressora':[2,[]],
+                            'modem':[1,[]],                    
+                            'sata':[2,[]]}
        
     def inserirDispositivo(self, dispositivo: Type[DriverES]):
         self.IOList["#"+self.qtdDispositivos+dispositivo.tipo] = dispositivo
@@ -23,4 +28,3 @@ class GerenciadorIO:
 
 GIO  = GerenciadorIO()
 GIO.inserirDispositivo(Impressora())
-print
