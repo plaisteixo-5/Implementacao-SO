@@ -1,4 +1,5 @@
 from gerenciador_processos import Processo, Gerenciador_de_processos
+from gerenciador_arquivos import GerenciadorDeArquivos
 
 class Kernel:
     def __init__(self):
@@ -16,13 +17,28 @@ class Kernel:
 
     def receber_files(nome_arquivo:str) -> list:
         nome_arquivo = 'Arquivos/' + nome_arquivo   #Usado para a pasta
-    
+
         with open(nome_arquivo, 'r') as arquivo:
-            qtd_blocos = arquivo.readline().rstrip()
-            n_segmentos_ocupados = arquivo.readline().rstrip()
+            qtd_blocos = int(arquivo.readline().rstrip())
+            n_segmentos_ocupados = int(arquivo.readline().rstrip())
             linhas = arquivo.readlines()
             linhas = [x.strip() for x in linhas]
             lista = [x.split(', ') for x in linhas]
+            arquivos = lista[0:n_segmentos_ocupados]
+            operacoes = lista[n_segmentos_ocupados:len(lista)]
+
+            gerenciador_arquivos = GerenciadorDeArquivos(qtd_blocos, n_segmentos_ocupados, arquivos)
+
+            for operacao in operacoes:
+                if operacao[1] == '0':
+                    gerenciador_arquivos.SalvaArquivo(id_processo=operacao[0], nome_arquivo=operacao[2], quantidade_blocos=operacao[3])
+                else:
+                    gerenciador_arquivos.DeletaArquivo(id_processo=operacao[0], nome_arquivo=operacao[2])
+                    
+                gerenciador_arquivos.PrintaMemoria()
+
+            print(operacao)
+
         return qtd_blocos, n_segmentos_ocupados, lista
 
     def run(self):
@@ -50,7 +66,9 @@ class Kernel:
 
 
         # Aqui deve vir o código para o arquivo files.txt
-        
+    
+
+    receber_files('files.txt')
 
 
 
