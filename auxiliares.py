@@ -1,6 +1,9 @@
 from gerenciador_processos import Processo, Gerenciador_de_processos
 from gerenciador_arquivos import GerenciadorDeArquivos
 
+nome_arquivo_processos = 'processos.txt'
+nome_arquivo_files = 'files.txt'
+
 class Kernel:
     def __init__(self):
         self.processos = []
@@ -42,9 +45,6 @@ class Kernel:
         return qtd_blocos, n_segmentos_ocupados, lista
 
     def run(self):
-        nome_arquivo_processos = 'processos.txt'
-        nome_arquivo_files = 'files.txt'
-
         lista_processos = Kernel.receber_processos(nome_arquivo_processos)
 
         qtd_processos = len(lista_processos)
