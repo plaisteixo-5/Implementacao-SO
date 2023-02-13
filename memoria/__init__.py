@@ -1,1 +1,0 @@
-from .memoriaTipo import TipoMemoria

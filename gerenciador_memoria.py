@@ -1,13 +1,16 @@
-from  .Memoria import TipoMemoria
+from  .memoria import ListaDeBlocos
+
 class GerenciadorMemoria:
+    # lista encadeada de blocos livres
+    # contiguas unir tudo em um espaço compacto
+    # fazer tudo em função de listas pode ser melhro
+    # B ou P - onde INicia - tamanho 
     def __init__(self) -> None:
-        self.memoria = [];   
+        self.memoria = ListaDeBlocos();   
 
-    def salvarNaMemoria(self, dados, tipo):
-        tipo  ==  ?  
+    def salvar(self, PID, tipo, tamanho):
+        ListaDeBlocos.alocarMemoria(PID, tipo, tamanho)
 
-MEMORY_TOTAL = 1024
-MEMORY_REAL = 64
-MEMORY_USER = 960
+
 
 
